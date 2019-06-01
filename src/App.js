@@ -1,43 +1,116 @@
-import React, { Component } from 'react';
-import './App.css';
-import axios from 'axios';
+import React, { Component } from "react";
+import "./App.css";
+const axios = require("axios");
 
-class App extends Component {
-  constructor() {
-    super();
+export default class App extends Component {
+  constructor(props) {
+    super(props);
     this.state = {
-      trails: []
- 
-    } 
-  this.mtbTrails=this.mtbTrails.bind(this);
-  
-}
+      randomjoke: "",
+      memeLoad: "",
+      punch: ""
+    };
 
-  mtbTrails(){
-    axios
-    .get(`https://www.mtbproject.com/data/get-trails-by-id?ids=4670265,157369,7015764,7003838,3671983&key=200474484-354d53d831d9c908d3bc05ffe69094c4`)
-    .then(res => console.log(res.data))
-    this.setState({ })
-  
+    this.handleChange = this.handleChange.bind(this);
+    this.submit = this.submit.bind(this);
+    this.getJokes = this.getJokes.bind(this);
+    this.memeImg = this.memeImg.bind(this);
   }
-   
-  
-  render(){
-     return(
-       <div className='main'>
-        <div className='Title'>
-          <h1 className='text-center'>Go Ride Your Bike</h1>
-        </div>
-        <div ClassName='myForm'>
-          <div className='form-group'>
-          <button onClick= {()=> this.mtbTrails()}>test</button>
+
+  handleChange(e) {
+    this.setState({ [e.target.name]: e.target.value });
+  }
+
+  submit() {
+    this.getJokes();
+    this.memeImg();
+  }
+
+  getJokes() {
+    const reqURL1 = "https://official-joke-api.appspot.com/random_joke";
+    axios.get(reqURL1).then(res => {
+      this.setState({
+        randomjoke: res.data.setup,
+        punch: res.data.punchline
+      });
+    });
+  }
+
+  memeImg() {
+    const reqURL2 = "https://api.memeload.us/v1/random";
+    axios.get(reqURL2).then(res => {
+      // console.log(res.data);
+      this.setState({
+        memeLoad: res.data.image
+        // console.log(image);
+      });
+    });
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <header className="App-header">
+          <h1 className="App-title">Hackathon Random App</h1>
+          <p className="App-intro">Get Random Jokes and Funny Memes Images</p>
+          <button
+            id="getjoke"
+            className="btn btn-primary"
+            onClick={this.submit}
+          >
+            Click Here
+          </button>
+        </header>
+
+        <div className="body container-fluid" id="form1">
+          <div className="container">
+            <div className="output">
+              <div className="row">
+                <div className="col-md-6">
+                  <div className="panel panel-default">
+                    <div className="panel-heading" id="header">
+                      Random Joke Result
+                    </div>
+                    <div className="panel-body">
+                      <div
+                        id="randomjoke"
+                        className="container-fluid"
+                        onChange={this.handleChange}
+                      >
+                        {this.state.randomjoke}
+                      </div>
+                      <div
+                        id="punchline"
+                        className="container-fluid"
+                        onChange={this.handleChange}
+                      >
+                        {this.state.punch}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="col-md-6">
+                  <div className="panel panel-default">
+                    <div className="panel-heading" id="header">
+                      RandomMemes Image Result
+                    </div>
+                    <div className="panel-body">
+                      <div
+                        id="joke"
+                        className="container-fluid"
+                        onChange={this.handleChange}
+                      >
+                        <img src={this.state.memeLoad} className="img-responsive"/>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-
-       </div>
-  
-     )
-   }
-
+      </div>
+    );
   }
-  export default App;
+}
